@@ -33,6 +33,11 @@ go.work.sum
 
 # Built application
 tmnt-pinball
+build.sh
+run.sh
+
+# Local SDL2 libraries
+lib/
 
 # macOS files
 .DS_Store

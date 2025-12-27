@@ -2,6 +2,8 @@
 
 A pinball video game inspired by the Stern TMNT pinball machine, built in Go for macOS with game controller support.
 
+**✨ No Homebrew or global dependencies required!** The setup script downloads SDL2 locally to the project directory.
+
 ## Features
 
 ### Game Modes
@@ -26,22 +28,15 @@ A pinball video game inspired by the Stern TMNT pinball machine, built in Go for
 
 ### macOS Requirements
 
-1. **Homebrew** (if not installed):
-   ```bash
-   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-   ```
+1. **Go** (1.21 or later)
+   - Download from [golang.org](https://golang.org/dl/)
+   - Or install via Homebrew if you prefer: `brew install go`
 
-2. **SDL2** libraries:
-   ```bash
-   brew install sdl2
-   ```
-
-3. **Go** (1.21 or later):
-   ```bash
-   brew install go
-   ```
+That's it! The setup script will download SDL2 locally - no global installation needed.
 
 ## Installation
+
+### Quick Start (Recommended)
 
 1. Clone the repository:
    ```bash
@@ -49,25 +44,49 @@ A pinball video game inspired by the Stern TMNT pinball machine, built in Go for
    cd tmnt-pinball
    ```
 
-2. Download dependencies:
+2. Run the setup script (downloads SDL2 locally):
    ```bash
-   go mod download
+   ./setup.sh
    ```
 
-3. Build the game:
+3. Run the game:
    ```bash
-   go build -o tmnt-pinball
+   ./run.sh
    ```
 
-## Running the Game
+### What the setup script does:
+
+- Downloads SDL2 framework (v2.28.5) directly from GitHub releases
+- Installs it locally in `lib/` directory (not system-wide)
+- Creates `build.sh` and `run.sh` helper scripts
+- No admin privileges required
+- No Homebrew needed
+
+### Manual Build (Advanced)
+
+If you prefer to build manually:
 
 ```bash
+# After running setup.sh once:
+./build.sh
+
+# Then run:
 ./tmnt-pinball
 ```
 
-Or run directly with Go:
+### Alternative: System-wide SDL2
+
+If you already have SDL2 installed system-wide (via Homebrew, etc.), you can skip the setup script:
+
 ```bash
-go run .
+# Install SDL2 globally (optional)
+brew install sdl2
+
+# Build directly
+go build -o tmnt-pinball
+
+# Run
+./tmnt-pinball
 ```
 
 ## Controls
@@ -111,14 +130,22 @@ go run .
 
 ```
 tmnt-pinball/
-├── main.go           # Main game loop and SDL initialization
-├── game.go           # Game state management and logic
-├── physics.go        # Physics engine for ball movement
-├── flippers.go       # Flipper mechanics
-├── input.go          # Keyboard and controller input handling
-├── renderer.go       # Rendering utilities
-├── go.mod            # Go module file
-└── README.md         # This file
+├── main.go              # Main game loop and SDL initialization
+├── game.go              # Game state management and logic
+├── physics.go           # Physics engine for ball movement
+├── flippers.go          # Flipper mechanics
+├── input.go             # Keyboard and controller input handling
+├── renderer.go          # Rendering utilities
+├── go.mod               # Go module file
+├── setup.sh             # Setup script (downloads SDL2 locally)
+├── gamecontrollerdb.txt # Controller mappings
+└── README.md            # This file
+
+Generated files (after setup):
+├── build.sh             # Build script with local SDL2 paths
+├── run.sh               # Run script with local SDL2 paths
+└── lib/                 # Local SDL2 framework (downloaded)
+    └── SDL2.framework/
 ```
 
 ## Scoring
@@ -137,11 +164,34 @@ tmnt-pinball/
 
 If you get an error about SDL2 not being found:
 
+**Option 1: Use the local setup (recommended)**
 ```bash
+# Run the setup script to download SDL2 locally
+./setup.sh
+
+# Then use the run script
+./run.sh
+```
+
+**Option 2: Manual local SDL2 setup**
+```bash
+# If setup.sh failed, try downloading manually
+mkdir -p lib
+cd lib
+curl -L "https://github.com/libsdl-org/SDL/releases/download/release-2.28.5/SDL2-2.28.5.dmg" -o SDL2.dmg
+hdiutil attach SDL2.dmg
+cp -R "/Volumes/SDL2/SDL2.framework" .
+hdiutil detach "/Volumes/SDL2"
+rm SDL2.dmg
+cd ..
+./build.sh
+```
+
+**Option 3: System-wide installation**
+```bash
+# Only if you prefer global installation
 brew install sdl2
-export CGO_CFLAGS="-I/opt/homebrew/include"
-export CGO_LDFLAGS="-L/opt/homebrew/lib"
-go build
+go build -o tmnt-pinball
 ```
 
 ### Controller Not Detected
