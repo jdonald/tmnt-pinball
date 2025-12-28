@@ -147,8 +147,7 @@ func (g *Game) handleTurtleSelection(input *InputManager) {
 	if input.LeftFlipper || input.RightFlipper || input.StartPressed {
 		g.sound.PlayCowabunga()
 		g.state = StatePlaying
-		g.physics.LaunchBall()
-		g.sound.PlayBallLaunch()
+		// Don't auto-launch - let player use charge-up mechanic
 		input.LeftFlipper = false
 		input.RightFlipper = false
 		input.StartPressed = false
@@ -166,11 +165,14 @@ func (g *Game) updatePlaying(input *InputManager) {
 		input.PizzaButton = false
 	}
 
-	// Launch ball
+	// Handle charge-up launch
+	// While button is held, charge the launcher
 	if input.LaunchButton {
+		g.physics.ChargeLaunch()
+	} else if g.physics.GetLaunchCharge() > 0 {
+		// Button was released - launch with current charge
 		g.physics.LaunchBall()
 		g.sound.PlayBallLaunch()
-		input.LaunchButton = false
 	}
 
 	// Track flipper state changes for sound
@@ -418,15 +420,15 @@ func (g *Game) renderPlayfield(renderer *sdl.Renderer) {
 
 	// Draw diagonal return lanes (guide balls to flippers)
 	renderer.SetDrawColor(150, 150, 150, 255)
-	// Left return lane - catches balls on left side, guides toward center
-	renderer.DrawLine(88, 600, 158, 750)
-	renderer.DrawLine(89, 600, 159, 750)
-	renderer.DrawLine(90, 600, 160, 750)
-	// Right return lane - catches balls on right-center, guides toward flippers
+	// Left return lane - guides balls from left wall to left flipper at x=110
+	renderer.DrawLine(68, 600, 130, 750)
+	renderer.DrawLine(69, 600, 131, 750)
+	renderer.DrawLine(70, 600, 132, 750)
+	// Right return lane - guides balls to right flipper at x=450
 	// Positioned left of launcher (x=488) to avoid blocking launch path
-	renderer.DrawLine(383, 750, 453, 600)
-	renderer.DrawLine(384, 750, 454, 600)
-	renderer.DrawLine(385, 750, 455, 600)
+	renderer.DrawLine(403, 750, 463, 600)
+	renderer.DrawLine(404, 750, 464, 600)
+	renderer.DrawLine(405, 750, 465, 600)
 
 	// Draw flippers
 	g.flippers.Render(renderer)

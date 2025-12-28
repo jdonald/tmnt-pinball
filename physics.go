@@ -24,12 +24,13 @@ type Ball struct {
 }
 
 type PhysicsEngine struct {
-	ball         *Ball
-	extraBalls   []*Ball
-	playWidth    float64
-	playHeight   float64
-	launcherX    float64
-	launcherY    float64
+	ball            *Ball
+	extraBalls      []*Ball
+	playWidth       float64
+	playHeight      float64
+	launcherX       float64
+	launcherY       float64
+	launchChargeTime float64 // How long launch button has been held
 }
 
 func NewPhysicsEngine() *PhysicsEngine {
@@ -88,17 +89,17 @@ func (pe *PhysicsEngine) handleWallCollisions(ball *Ball) {
 	playRight := playLeft + pe.playWidth
 	playBottom := playTop + pe.playHeight
 
-	// Left diagonal return lane (guides ball from left side toward center/flippers)
-	// Positioned to catch balls on the left and guide them inward
+	// Left diagonal return lane - guides balls toward left flipper at x=110
+	// Rail positioned to funnel balls from left wall area to left flipper
 	if ball.Y > 550 && ball.Y < 780 {
-		railStartX := playLeft + 50
+		railStartX := playLeft + 30  // Start near left wall (68)
 		railStartY := 600.0
-		railEndX := playLeft + 120
+		railEndX := playLeft + 92    // End near left flipper at 110 (130)
 		railEndY := 750.0
 
 		dist := pe.pointToLineDistance(ball.X, ball.Y, railStartX, railStartY, railEndX, railEndY)
 		if dist < ball.Radius && ball.X < railEndX+20 && ball.Y > railStartY-20 && ball.Y < railEndY+20 {
-			// Reflect ball off diagonal rail toward center
+			// Reflect ball off diagonal rail toward left flipper
 			angle := math.Atan2(railEndY-railStartY, railEndX-railStartX)
 			normal := angle + math.Pi/2
 
@@ -113,17 +114,17 @@ func (pe *PhysicsEngine) handleWallCollisions(ball *Ball) {
 		}
 	}
 
-	// Right diagonal return lane (guides ball from right-center toward flippers)
-	// Positioned left of launcher to avoid blocking launch path
+	// Right diagonal return lane - guides balls toward right flipper at x=450
+	// Rail positioned left of launcher (x=488) to avoid blocking launch path
 	if ball.Y > 550 && ball.Y < 780 {
-		railStartX := playRight - 180
+		railStartX := playRight - 160 // Start at 403
 		railStartY := 750.0
-		railEndX := playRight - 110
+		railEndX := playRight - 100   // End at 463, guiding to right flipper at 450
 		railEndY := 600.0
 
 		dist := pe.pointToLineDistance(ball.X, ball.Y, railStartX, railStartY, railEndX, railEndY)
 		if dist < ball.Radius && ball.X > railStartX-20 && ball.X < railEndX+20 && ball.Y > railEndY-20 && ball.Y < railStartY+20 {
-			// Reflect ball off diagonal rail toward center
+			// Reflect ball off diagonal rail toward right flipper
 			angle := math.Atan2(railEndY-railStartY, railEndX-railStartX)
 			normal := angle - math.Pi/2
 
@@ -157,12 +158,14 @@ func (pe *PhysicsEngine) handleWallCollisions(ball *Ball) {
 	}
 
 	// Bottom (ball lost if it goes past flippers and through the gap)
-	// Only lose ball in the center gap between the rails
+	// Only lose ball in the center gap between the flippers
 	if ball.Y > playBottom {
-		// Check if ball is in the center gap (not protected by rails)
-		// Small gaps on sides for outlanes, center gap for drain
-		gapLeft := playLeft + 100
-		gapRight := playRight - 100
+		// Check if ball is in the center gap (not protected by flippers)
+		// Flippers at x=110 and x=450 with length 120
+		// Left flipper extends to ~230, right flipper extends to ~330
+		// Narrow outlanes on far sides, center drain between flippers
+		gapLeft := playLeft + 70   // Small outlane on left (38+70=108, near left flipper at 110)
+		gapRight := playRight - 70 // Small outlane on right (563-70=493, near launcher at 488)
 		if ball.X > gapLeft && ball.X < gapRight {
 			ball.Active = false
 		}
@@ -199,7 +202,7 @@ func (pe *PhysicsEngine) handleFlipperCollisions(ball *Ball, flippers *Flippers)
 
 func (pe *PhysicsEngine) checkFlipperCollision(ball *Ball, flipperX, flipperY, angle float64) bool {
 	// Simplified collision check with flipper rectangle
-	flipperLength := 80.0
+	flipperLength := 120.0 // Updated to match new flipper length
 	flipperWidth := 15.0
 
 	// Calculate flipper endpoints
@@ -230,12 +233,39 @@ func (pe *PhysicsEngine) pointToLineDistance(px, py, x1, y1, x2, y2 float64) flo
 	return math.Sqrt((px-projX)*(px-projX) + (py-projY)*(py-projY))
 }
 
+// ChargeLaunch increases the launch charge (call while button is held)
+func (pe *PhysicsEngine) ChargeLaunch() {
+	if pe.ball.InLauncher && pe.launchChargeTime < 60 {
+		pe.launchChargeTime += 1.0
+	}
+}
+
+// LaunchBall launches with current charge (call when button is released)
 func (pe *PhysicsEngine) LaunchBall() {
 	if pe.ball.InLauncher {
 		pe.ball.InLauncher = false
-		pe.ball.VelY = LaunchPower
-		pe.ball.VelX = -3 // Slight angle
+
+		// Calculate power based on charge time
+		// Min power: -15, Max power: -35 (at 60 frames = 1 second)
+		minPower := 15.0
+		maxPower := 35.0
+		chargeFactor := pe.launchChargeTime / 60.0 // 0 to 1 over 1 second
+		if chargeFactor > 1.0 {
+			chargeFactor = 1.0
+		}
+		power := minPower + (maxPower-minPower)*chargeFactor
+
+		pe.ball.VelY = -power // Negative is upward
+		pe.ball.VelX = -3     // Slight angle toward playfield
+
+		// Reset charge for next launch
+		pe.launchChargeTime = 0
 	}
+}
+
+// GetLaunchCharge returns current charge level (0-1)
+func (pe *PhysicsEngine) GetLaunchCharge() float64 {
+	return pe.launchChargeTime / 60.0
 }
 
 func (pe *PhysicsEngine) ResetBall() {
@@ -319,4 +349,49 @@ func (pe *PhysicsEngine) Render(renderer *sdl.Renderer) {
 	// Draw launcher
 	renderer.SetDrawColor(150, 150, 150, 255)
 	renderer.FillRect(&sdl.Rect{X: int32(pe.launcherX) - 15, Y: int32(pe.launcherY) - 100, W: 30, H: 100})
+
+	// Draw launch charge indicator (visual feedback for charge-up)
+	if pe.ball.InLauncher && pe.launchChargeTime > 0 {
+		chargeLevel := pe.GetLaunchCharge()
+		if chargeLevel > 1.0 {
+			chargeLevel = 1.0
+		}
+
+		// Draw charge bar next to launcher
+		barHeight := 80.0
+		barWidth := 10.0
+		barX := pe.launcherX + 20
+		barY := pe.launcherY - 90
+
+		// Background
+		renderer.SetDrawColor(60, 60, 60, 255)
+		renderer.FillRect(&sdl.Rect{
+			X: int32(barX),
+			Y: int32(barY),
+			W: int32(barWidth),
+			H: int32(barHeight),
+		})
+
+		// Charge level (red to yellow to green)
+		fillHeight := barHeight * chargeLevel
+		var r, g, b uint8
+		if chargeLevel < 0.5 {
+			// Red to yellow
+			r = 255
+			g = uint8(chargeLevel * 2 * 255)
+			b = 0
+		} else {
+			// Yellow to green
+			r = uint8((1.0 - chargeLevel) * 2 * 255)
+			g = 255
+			b = 0
+		}
+		renderer.SetDrawColor(r, g, b, 255)
+		renderer.FillRect(&sdl.Rect{
+			X: int32(barX),
+			Y: int32(barY + barHeight - fillHeight),
+			W: int32(barWidth),
+			H: int32(fillHeight),
+		})
+	}
 }

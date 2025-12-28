@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	FlipperLength     = 80.0
+	FlipperLength     = 120.0 // Increased from 80 to close center gap
 	FlipperWidth      = 15.0
 	FlipperRestAngle  = 0.4  // ~23 degrees down
 	FlipperActiveAngle = -0.6 // ~34 degrees up
@@ -25,9 +25,9 @@ type Flippers struct {
 
 func NewFlippers() *Flippers {
 	return &Flippers{
-		LeftX:      188,
+		LeftX:      110, // Moved closer to left wall (was 188)
 		LeftY:      750,
-		RightX:     413,
+		RightX:     450, // Moved closer to right (was 413), but left of launcher at 488
 		RightY:     750,
 		LeftAngle:  FlipperRestAngle,
 		RightAngle: math.Pi - FlipperRestAngle,
