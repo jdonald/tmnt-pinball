@@ -46,7 +46,11 @@ func main() {
 	// Note: SDL2 has built-in controller mappings for common controllers
 	// Custom mappings from gamecontrollerdb.txt can be loaded manually if needed
 
-	game := NewGame(renderer)
+	// Initialize sound system
+	soundSystem := NewSoundSystem()
+	defer soundSystem.Close()
+
+	game := NewGame(renderer, soundSystem)
 	inputManager := NewInputManager()
 
 	running := true

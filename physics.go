@@ -83,27 +83,87 @@ func (pe *PhysicsEngine) updateBall(ball *Ball, flippers *Flippers) {
 }
 
 func (pe *PhysicsEngine) handleWallCollisions(ball *Ball) {
+	playLeft := 38.0
+	playTop := 38.0
+	playRight := playLeft + pe.playWidth
+	playBottom := playTop + pe.playHeight
+
+	// Left diagonal rail (bottom-left angled inward)
+	// Creates a slanted wall from bottom-left corner going up and inward
+	if ball.Y > 650 { // Only in lower portion
+		railStartX := playLeft
+		railStartY := playBottom - 100
+		railEndX := playLeft + 75
+		railEndY := playBottom
+
+		dist := pe.pointToLineDistance(ball.X, ball.Y, railStartX, railStartY, railEndX, railEndY)
+		if dist < ball.Radius && ball.X < railEndX && ball.Y > railStartY {
+			// Reflect ball off diagonal rail
+			angle := math.Atan2(railEndY-railStartY, railEndX-railStartX)
+			normal := angle + math.Pi/2
+
+			// Reflect velocity
+			dot := ball.VelX*math.Cos(normal) + ball.VelY*math.Sin(normal)
+			ball.VelX = (ball.VelX - 2*dot*math.Cos(normal)) * WallBounce
+			ball.VelY = (ball.VelY - 2*dot*math.Sin(normal)) * WallBounce
+
+			// Push ball away from rail
+			ball.X += math.Cos(normal) * (ball.Radius - dist + 1)
+			ball.Y += math.Sin(normal) * (ball.Radius - dist + 1)
+		}
+	}
+
+	// Right diagonal rail (bottom-right angled inward)
+	if ball.Y > 650 {
+		railStartX := playRight - 75
+		railStartY := playBottom
+		railEndX := playRight
+		railEndY := playBottom - 100
+
+		dist := pe.pointToLineDistance(ball.X, ball.Y, railStartX, railStartY, railEndX, railEndY)
+		if dist < ball.Radius && ball.X > railStartX && ball.Y > railEndY {
+			// Reflect ball off diagonal rail
+			angle := math.Atan2(railEndY-railStartY, railEndX-railStartX)
+			normal := angle - math.Pi/2
+
+			// Reflect velocity
+			dot := ball.VelX*math.Cos(normal) + ball.VelY*math.Sin(normal)
+			ball.VelX = (ball.VelX - 2*dot*math.Cos(normal)) * WallBounce
+			ball.VelY = (ball.VelY - 2*dot*math.Sin(normal)) * WallBounce
+
+			// Push ball away from rail
+			ball.X += math.Cos(normal) * (ball.Radius - dist + 1)
+			ball.Y += math.Sin(normal) * (ball.Radius - dist + 1)
+		}
+	}
+
 	// Left wall
-	if ball.X-ball.Radius < 50 {
-		ball.X = 50 + ball.Radius
+	if ball.X-ball.Radius < playLeft {
+		ball.X = playLeft + ball.Radius
 		ball.VelX = -ball.VelX * WallBounce
 	}
 
 	// Right wall
-	if ball.X+ball.Radius > 50+pe.playWidth {
-		ball.X = 50 + pe.playWidth - ball.Radius
+	if ball.X+ball.Radius > playRight {
+		ball.X = playRight - ball.Radius
 		ball.VelX = -ball.VelX * WallBounce
 	}
 
 	// Top wall
-	if ball.Y-ball.Radius < 50 {
-		ball.Y = 50 + ball.Radius
+	if ball.Y-ball.Radius < playTop {
+		ball.Y = playTop + ball.Radius
 		ball.VelY = -ball.VelY * WallBounce
 	}
 
-	// Bottom (ball lost if it goes past flippers)
-	if ball.Y > 50+pe.playHeight {
-		ball.Active = false
+	// Bottom (ball lost if it goes past flippers and through the gap)
+	// Only lose ball in the middle gap between the rails
+	if ball.Y > playBottom {
+		// Check if ball is in the center gap (not protected by rails)
+		gapLeft := playLeft + 75
+		gapRight := playRight - 75
+		if ball.X > gapLeft && ball.X < gapRight {
+			ball.Active = false
+		}
 	}
 }
 
@@ -230,10 +290,6 @@ func (pe *PhysicsEngine) ActiveBalls() int {
 		}
 	}
 	return count
-}
-
-func (pe *PhysicsEngine) PlayBumperSound() {
-	// Sound will be played here when audio is implemented
 }
 
 func (pe *PhysicsEngine) Render(renderer *sdl.Renderer) {

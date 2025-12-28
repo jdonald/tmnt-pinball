@@ -52,6 +52,7 @@ type Game struct {
 	comboProgress   int
 	episodeMode     bool
 	renderer        *sdl.Renderer
+	sound           *SoundSystem
 }
 
 type Bumper struct {
@@ -69,11 +70,12 @@ type Target struct {
 	TargetType string // "pizza", "foot", "episode"
 }
 
-func NewGame(renderer *sdl.Renderer) *Game {
+func NewGame(renderer *sdl.Renderer, sound *SoundSystem) *Game {
 	g := &Game{
 		state:    StateMenu,
 		balls:    3,
 		renderer: renderer,
+		sound:    sound,
 		physics:  NewPhysicsEngine(),
 	}
 	g.setupPlayfield()
@@ -111,6 +113,7 @@ func (g *Game) Update(input *InputManager) {
 	case StateMenu:
 		if input.StartPressed {
 			g.state = StateTurtleSelection
+			g.sound.PlayCowabunga()
 			input.StartPressed = false
 		}
 	case StateTurtleSelection:
@@ -142,8 +145,10 @@ func (g *Game) handleTurtleSelection(input *InputManager) {
 
 	// Confirm selection with flipper button or A button
 	if input.LeftFlipper || input.RightFlipper || input.StartPressed {
+		g.sound.PlayCowabunga()
 		g.state = StatePlaying
 		g.physics.LaunchBall()
+		g.sound.PlayBallLaunch()
 		input.LeftFlipper = false
 		input.RightFlipper = false
 		input.StartPressed = false
@@ -164,11 +169,24 @@ func (g *Game) updatePlaying(input *InputManager) {
 	// Launch ball
 	if input.LaunchButton {
 		g.physics.LaunchBall()
+		g.sound.PlayBallLaunch()
 		input.LaunchButton = false
 	}
 
+	// Track flipper state changes for sound
+	prevLeftActive := g.flippers.LeftActive
+	prevRightActive := g.flippers.RightActive
+
 	// Update physics
 	g.physics.Update(g.flippers)
+
+	// Play flipper sound when activated
+	if g.flippers.LeftActive && !prevLeftActive {
+		g.sound.PlayFlipperHit()
+	}
+	if g.flippers.RightActive && !prevRightActive {
+		g.sound.PlayFlipperHit()
+	}
 
 	// Check collisions
 	g.checkCollisions()
@@ -228,7 +246,7 @@ func (g *Game) checkCollisions() {
 			ball.VelX = math.Cos(angle) * 15
 			ball.VelY = math.Sin(angle) * 15
 			g.score += 100
-			g.physics.PlayBumperSound()
+			g.sound.PlayBumperHit()
 		}
 	}
 
@@ -240,6 +258,7 @@ func (g *Game) checkCollisions() {
 			ball.Y > target.Y && ball.Y < target.Y+target.Height {
 			target.Hit = true
 			g.score += target.Points
+			g.sound.PlayTargetHit()
 			g.handleTargetHit(target)
 		}
 	}
@@ -396,6 +415,17 @@ func (g *Game) renderPlayfield(renderer *sdl.Renderer) {
 			})
 		}
 	}
+
+	// Draw diagonal rails (protective side walls)
+	renderer.SetDrawColor(150, 150, 150, 255)
+	// Left rail
+	renderer.DrawLine(38, 763, 113, 863)
+	renderer.DrawLine(39, 763, 114, 863)
+	renderer.DrawLine(40, 763, 115, 863)
+	// Right rail
+	renderer.DrawLine(488, 863, 563, 763)
+	renderer.DrawLine(489, 863, 564, 763)
+	renderer.DrawLine(490, 863, 565, 763)
 
 	// Draw flippers
 	g.flippers.Render(renderer)

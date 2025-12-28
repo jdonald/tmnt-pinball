@@ -22,7 +22,6 @@ func drawText(renderer *sdl.Renderer, text string, x, y int, r, g, b uint8) {
 	renderer.SetDrawColor(r, g, b, 255)
 
 	charWidth := int32(6)  // 5 pixels + 1 spacing
-	charHeight := int32(7)
 	scale := int32(1)
 
 	for i, char := range text {
