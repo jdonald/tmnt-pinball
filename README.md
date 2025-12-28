@@ -2,6 +2,14 @@
 
 A pinball video game inspired by the Stern TMNT pinball machine, built in Go for macOS with game controller support.
 
+<div style="display: flex; justify-content: space-between;">
+    <img src="screenshot1.png" style="width: 48%;"/>
+    <img src="screenshot2.png" style="width: 48%;"/>
+</div>
+
+The initial Claude prompt involved uploading 5 pictures of the pinball machine seen at State of Mind
+Slice House in Palo Alto.
+
 **✨ No Homebrew or global dependencies required!** The setup script downloads SDL2 locally to the project directory.
 
 ## Features
