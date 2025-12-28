@@ -25,10 +25,10 @@ type Flippers struct {
 
 func NewFlippers() *Flippers {
 	return &Flippers{
-		LeftX:      250,
-		LeftY:      1000,
-		RightX:     550,
-		RightY:     1000,
+		LeftX:      188,
+		LeftY:      750,
+		RightX:     413,
+		RightY:     750,
 		LeftAngle:  FlipperRestAngle,
 		RightAngle: math.Pi - FlipperRestAngle,
 	}

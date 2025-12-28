@@ -34,10 +34,10 @@ type PhysicsEngine struct {
 
 func NewPhysicsEngine() *PhysicsEngine {
 	pe := &PhysicsEngine{
-		playWidth:  700,
-		playHeight: 1100,
-		launcherX:  650,
-		launcherY:  1000,
+		playWidth:  525,
+		playHeight: 825,
+		launcherX:  488,
+		launcherY:  750,
 	}
 	pe.ball = &Ball{
 		X:          pe.launcherX,

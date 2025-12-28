@@ -86,23 +86,23 @@ func (g *Game) setupPlayfield() {
 
 	// Setup bumpers (like in the real table)
 	g.bumpers = []Bumper{
-		{X: 300, Y: 300, Radius: 30, Active: true},
-		{X: 500, Y: 300, Radius: 30, Active: true},
-		{X: 400, Y: 250, Radius: 30, Active: true},
+		{X: 225, Y: 225, Radius: 25, Active: true},
+		{X: 375, Y: 225, Radius: 25, Active: true},
+		{X: 300, Y: 188, Radius: 25, Active: true},
 	}
 
 	// Setup targets
 	g.targets = []Target{
 		// Pizza targets
-		{X: 100, Y: 200, Width: 40, Height: 20, Points: 1000, TargetType: "pizza"},
-		{X: 150, Y: 200, Width: 40, Height: 20, Points: 1000, TargetType: "pizza"},
-		{X: 200, Y: 200, Width: 40, Height: 20, Points: 1000, TargetType: "pizza"},
+		{X: 75, Y: 150, Width: 30, Height: 15, Points: 1000, TargetType: "pizza"},
+		{X: 113, Y: 150, Width: 30, Height: 15, Points: 1000, TargetType: "pizza"},
+		{X: 150, Y: 150, Width: 30, Height: 15, Points: 1000, TargetType: "pizza"},
 		// Foot clan targets (1-2-3 combo)
-		{X: 600, Y: 400, Width: 30, Height: 30, Points: 500, TargetType: "foot1"},
-		{X: 650, Y: 400, Width: 30, Height: 30, Points: 500, TargetType: "foot2"},
-		{X: 700, Y: 400, Width: 30, Height: 30, Points: 500, TargetType: "foot3"},
+		{X: 450, Y: 300, Width: 25, Height: 25, Points: 500, TargetType: "foot1"},
+		{X: 488, Y: 300, Width: 25, Height: 25, Points: 500, TargetType: "foot2"},
+		{X: 525, Y: 300, Width: 25, Height: 25, Points: 500, TargetType: "foot3"},
 		// Episode targets
-		{X: 350, Y: 150, Width: 40, Height: 30, Points: 2000, TargetType: "episode"},
+		{X: 263, Y: 113, Width: 30, Height: 23, Points: 2000, TargetType: "episode"},
 	}
 }
 
@@ -324,42 +324,42 @@ func (g *Game) renderMenu(renderer *sdl.Renderer) {
 	renderer.Clear()
 
 	// Title
-	drawText(renderer, "TEENAGE MUTANT NINJA TURTLES", 100, 300, 255, 255, 255)
-	drawText(renderer, "PINBALL", 320, 350, 255, 255, 0)
-	drawText(renderer, "Press START or SPACE to begin", 200, 600, 255, 255, 255)
+	drawText(renderer, "TEENAGE MUTANT NINJA TURTLES", 75, 225, 255, 255, 255)
+	drawText(renderer, "PINBALL", 240, 263, 255, 255, 0)
+	drawText(renderer, "Press START or SPACE to begin", 150, 450, 255, 255, 255)
 }
 
 func (g *Game) renderTurtleSelection(renderer *sdl.Renderer) {
 	renderer.SetDrawColor(20, 20, 40, 255)
 	renderer.Clear()
 
-	drawText(renderer, "CHOOSE YOUR TURTLE", 220, 100, 255, 255, 0)
+	drawText(renderer, "CHOOSE YOUR TURTLE", 165, 75, 255, 255, 0)
 
 	// Draw all turtles
 	for i := 0; i < 4; i++ {
-		x := int32(150 + i*150)
-		y := int32(400)
+		x := int32(113 + i*113)
+		y := int32(300)
 		color := TurtleColors[i]
 
 		// Highlight selected turtle
 		if Turtle(i) == g.selectedTurtle {
 			renderer.SetDrawColor(255, 255, 0, 255)
-			renderer.FillRect(&sdl.Rect{X: x - 10, Y: y - 10, W: 80, H: 120})
+			renderer.FillRect(&sdl.Rect{X: x - 8, Y: y - 8, W: 60, H: 90})
 		}
 
 		// Draw turtle representation (circle)
 		renderer.SetDrawColor(0, 200, 0, 255) // Green body
-		drawCircle(renderer, x+25, y+25, 30)
+		drawCircle(renderer, x+19, y+19, 23)
 
 		// Draw bandana color
 		renderer.SetDrawColor(color.R, color.G, color.B, 255)
-		renderer.FillRect(&sdl.Rect{X: x, Y: y - 5, W: 60, H: 15})
+		renderer.FillRect(&sdl.Rect{X: x, Y: y - 4, W: 45, H: 11})
 
 		// Draw name
-		drawText(renderer, TurtleNames[i], int(x)-20, int(y)+80, 255, 255, 255)
+		drawText(renderer, TurtleNames[i], int(x)-15, int(y)+60, 255, 255, 255)
 	}
 
-	drawText(renderer, "Use LEFT/RIGHT to select, FLIPPER to confirm", 120, 700, 200, 200, 200)
+	drawText(renderer, "Use LEFT/RIGHT to select, FLIPPER to confirm", 90, 525, 200, 200, 200)
 }
 
 func (g *Game) renderPlayfield(renderer *sdl.Renderer) {
@@ -369,7 +369,7 @@ func (g *Game) renderPlayfield(renderer *sdl.Renderer) {
 
 	// Draw playfield border
 	renderer.SetDrawColor(100, 100, 100, 255)
-	renderer.DrawRect(&sdl.Rect{X: 50, Y: 50, W: 700, H: 1100})
+	renderer.DrawRect(&sdl.Rect{X: 38, Y: 38, W: 525, H: 825})
 
 	// Draw bumpers
 	for _, bumper := range g.bumpers {
@@ -446,7 +446,7 @@ func (g *Game) renderGameOver(renderer *sdl.Renderer) {
 	renderer.SetDrawColor(0, 0, 0, 255)
 	renderer.Clear()
 
-	drawText(renderer, "GAME OVER", 300, 400, 255, 0, 0)
-	drawText(renderer, fmt.Sprintf("Final Score: %d", g.score), 280, 450, 255, 255, 255)
-	drawText(renderer, "Press START to play again", 240, 550, 200, 200, 200)
+	drawText(renderer, "GAME OVER", 225, 300, 255, 0, 0)
+	drawText(renderer, fmt.Sprintf("Final Score: %d", g.score), 210, 338, 255, 255, 255)
+	drawText(renderer, "Press START to play again", 180, 413, 200, 200, 200)
 }

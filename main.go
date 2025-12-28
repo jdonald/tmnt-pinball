@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	WindowWidth  = 800
-	WindowHeight = 1200
+	WindowWidth  = 600
+	WindowHeight = 900
 	FPS          = 60
 )
 
@@ -27,7 +27,7 @@ func main() {
 		sdl.WINDOWPOS_UNDEFINED,
 		WindowWidth,
 		WindowHeight,
-		sdl.WINDOW_SHOWN,
+		sdl.WINDOW_SHOWN|sdl.WINDOW_RESIZABLE,
 	)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to create window: %s\n", err)

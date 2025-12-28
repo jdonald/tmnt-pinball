@@ -69,7 +69,7 @@ export PKG_CONFIG=/usr/bin/true
 
 # Set environment variables for local SDL2
 export CGO_CFLAGS="-F$(pwd)/lib -I$(pwd)/lib/SDL2.framework/Headers"
-export CGO_LDFLAGS="-F$(pwd)/lib -framework SDL2 -Wl,-rpath,@executable_path/../lib"
+export CGO_LDFLAGS="-F$(pwd)/lib -framework SDL2 -Wl,-rpath,@executable_path/lib"
 
 echo "🔨 Building TMNT Pinball..."
 go build -o tmnt-pinball
