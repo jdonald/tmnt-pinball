@@ -43,7 +43,8 @@ func main() {
 	defer renderer.Destroy()
 
 	// Initialize game controller support
-	sdl.GameControllerAddMappingsFromFile("gamecontrollerdb.txt")
+	// Note: SDL2 has built-in controller mappings for common controllers
+	// Custom mappings from gamecontrollerdb.txt can be loaded manually if needed
 
 	game := NewGame(renderer)
 	inputManager := NewInputManager()

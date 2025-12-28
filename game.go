@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"math"
-	"math/rand"
 
 	"github.com/veandco/go-sdl2/sdl"
 )
