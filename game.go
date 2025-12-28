@@ -416,16 +416,16 @@ func (g *Game) renderPlayfield(renderer *sdl.Renderer) {
 		}
 	}
 
-	// Draw diagonal rails (protective side walls)
+	// Draw diagonal return lanes (guide balls to flippers)
 	renderer.SetDrawColor(150, 150, 150, 255)
-	// Left rail
-	renderer.DrawLine(38, 763, 113, 863)
-	renderer.DrawLine(39, 763, 114, 863)
-	renderer.DrawLine(40, 763, 115, 863)
-	// Right rail
-	renderer.DrawLine(488, 863, 563, 763)
-	renderer.DrawLine(489, 863, 564, 763)
-	renderer.DrawLine(490, 863, 565, 763)
+	// Left return lane - from left wall down and inward
+	renderer.DrawLine(38, 550, 138, 720)
+	renderer.DrawLine(39, 550, 139, 720)
+	renderer.DrawLine(40, 550, 140, 720)
+	// Right return lane - from right wall down and inward
+	renderer.DrawLine(463, 720, 563, 550)
+	renderer.DrawLine(464, 720, 564, 550)
+	renderer.DrawLine(465, 720, 565, 550)
 
 	// Draw flippers
 	g.flippers.Render(renderer)

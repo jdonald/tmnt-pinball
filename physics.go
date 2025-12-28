@@ -88,17 +88,17 @@ func (pe *PhysicsEngine) handleWallCollisions(ball *Ball) {
 	playRight := playLeft + pe.playWidth
 	playBottom := playTop + pe.playHeight
 
-	// Left diagonal rail (bottom-left angled inward)
-	// Creates a slanted wall from bottom-left corner going up and inward
-	if ball.Y > 650 { // Only in lower portion
+	// Left diagonal return lane (guides ball from left wall toward center/flippers)
+	// Starts mid-height on left wall, angles down and inward
+	if ball.Y > 500 && ball.Y < 750 {
 		railStartX := playLeft
-		railStartY := playBottom - 100
-		railEndX := playLeft + 75
-		railEndY := playBottom
+		railStartY := 550.0
+		railEndX := playLeft + 100
+		railEndY := 720.0
 
 		dist := pe.pointToLineDistance(ball.X, ball.Y, railStartX, railStartY, railEndX, railEndY)
-		if dist < ball.Radius && ball.X < railEndX && ball.Y > railStartY {
-			// Reflect ball off diagonal rail
+		if dist < ball.Radius && ball.X < railEndX+20 && ball.Y > railStartY-20 && ball.Y < railEndY+20 {
+			// Reflect ball off diagonal rail toward center
 			angle := math.Atan2(railEndY-railStartY, railEndX-railStartX)
 			normal := angle + math.Pi/2
 
@@ -113,16 +113,17 @@ func (pe *PhysicsEngine) handleWallCollisions(ball *Ball) {
 		}
 	}
 
-	// Right diagonal rail (bottom-right angled inward)
-	if ball.Y > 650 {
-		railStartX := playRight - 75
-		railStartY := playBottom
+	// Right diagonal return lane (guides ball from right wall toward center/flippers)
+	// Starts mid-height on right wall, angles down and inward
+	if ball.Y > 500 && ball.Y < 750 {
+		railStartX := playRight - 100
+		railStartY := 720.0
 		railEndX := playRight
-		railEndY := playBottom - 100
+		railEndY := 550.0
 
 		dist := pe.pointToLineDistance(ball.X, ball.Y, railStartX, railStartY, railEndX, railEndY)
-		if dist < ball.Radius && ball.X > railStartX && ball.Y > railEndY {
-			// Reflect ball off diagonal rail
+		if dist < ball.Radius && ball.X > railStartX-20 && ball.Y > railEndY-20 && ball.Y < railStartY+20 {
+			// Reflect ball off diagonal rail toward center
 			angle := math.Atan2(railEndY-railStartY, railEndX-railStartX)
 			normal := angle - math.Pi/2
 
@@ -156,11 +157,12 @@ func (pe *PhysicsEngine) handleWallCollisions(ball *Ball) {
 	}
 
 	// Bottom (ball lost if it goes past flippers and through the gap)
-	// Only lose ball in the middle gap between the rails
+	// Only lose ball in the center gap between the rails
 	if ball.Y > playBottom {
 		// Check if ball is in the center gap (not protected by rails)
-		gapLeft := playLeft + 75
-		gapRight := playRight - 75
+		// Small gaps on sides for outlanes, center gap for drain
+		gapLeft := playLeft + 100
+		gapRight := playRight - 100
 		if ball.X > gapLeft && ball.X < gapRight {
 			ball.Active = false
 		}

@@ -69,7 +69,15 @@ export PKG_CONFIG=/usr/bin/true
 
 # Set environment variables for local SDL2
 export CGO_CFLAGS="-F$(pwd)/lib -I$(pwd)/lib/SDL2.framework/Headers"
-export CGO_LDFLAGS="-F$(pwd)/lib -framework SDL2 -Wl,-rpath,@executable_path/lib"
+export CGO_LDFLAGS="-F$(pwd)/lib -framework SDL2"
+
+# Create a wrapper script to set DYLD_FRAMEWORK_PATH at runtime
+cat > tmnt-pinball-wrapper.sh << 'WRAPPERSCRIPT'
+#!/bin/bash
+export DYLD_FRAMEWORK_PATH="$(cd "$(dirname "$0")" && pwd)/lib:${DYLD_FRAMEWORK_PATH}"
+exec "$(cd "$(dirname "$0")" && pwd)/tmnt-pinball" "$@"
+WRAPPERSCRIPT
+chmod +x tmnt-pinball-wrapper.sh
 
 echo "🔨 Building TMNT Pinball..."
 go build -o tmnt-pinball
@@ -109,6 +117,9 @@ echo "  ./run.sh"
 echo ""
 echo "Or build separately and run:"
 echo "  ./build.sh"
-echo "  ./tmnt-pinball"
+echo "  ./run.sh"
+echo ""
+echo "Note: The executable needs DYLD_FRAMEWORK_PATH set to find SDL2."
+echo "Use ./run.sh which handles this automatically."
 echo ""
 echo "Cowabunga! 🐢🍕"

@@ -35,6 +35,7 @@ go.work.sum
 tmnt-pinball
 build.sh
 run.sh
+tmnt-pinball-wrapper.sh
 
 # Local SDL2 libraries
 lib/
