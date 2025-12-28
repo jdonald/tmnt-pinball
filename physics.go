@@ -88,13 +88,13 @@ func (pe *PhysicsEngine) handleWallCollisions(ball *Ball) {
 	playRight := playLeft + pe.playWidth
 	playBottom := playTop + pe.playHeight
 
-	// Left diagonal return lane (guides ball from left wall toward center/flippers)
-	// Starts mid-height on left wall, angles down and inward
-	if ball.Y > 500 && ball.Y < 750 {
-		railStartX := playLeft
-		railStartY := 550.0
-		railEndX := playLeft + 100
-		railEndY := 720.0
+	// Left diagonal return lane (guides ball from left side toward center/flippers)
+	// Positioned to catch balls on the left and guide them inward
+	if ball.Y > 550 && ball.Y < 780 {
+		railStartX := playLeft + 50
+		railStartY := 600.0
+		railEndX := playLeft + 120
+		railEndY := 750.0
 
 		dist := pe.pointToLineDistance(ball.X, ball.Y, railStartX, railStartY, railEndX, railEndY)
 		if dist < ball.Radius && ball.X < railEndX+20 && ball.Y > railStartY-20 && ball.Y < railEndY+20 {
@@ -113,16 +113,16 @@ func (pe *PhysicsEngine) handleWallCollisions(ball *Ball) {
 		}
 	}
 
-	// Right diagonal return lane (guides ball from right wall toward center/flippers)
-	// Starts mid-height on right wall, angles down and inward
-	if ball.Y > 500 && ball.Y < 750 {
-		railStartX := playRight - 100
-		railStartY := 720.0
-		railEndX := playRight
-		railEndY := 550.0
+	// Right diagonal return lane (guides ball from right-center toward flippers)
+	// Positioned left of launcher to avoid blocking launch path
+	if ball.Y > 550 && ball.Y < 780 {
+		railStartX := playRight - 180
+		railStartY := 750.0
+		railEndX := playRight - 110
+		railEndY := 600.0
 
 		dist := pe.pointToLineDistance(ball.X, ball.Y, railStartX, railStartY, railEndX, railEndY)
-		if dist < ball.Radius && ball.X > railStartX-20 && ball.Y > railEndY-20 && ball.Y < railStartY+20 {
+		if dist < ball.Radius && ball.X > railStartX-20 && ball.X < railEndX+20 && ball.Y > railEndY-20 && ball.Y < railStartY+20 {
 			// Reflect ball off diagonal rail toward center
 			angle := math.Atan2(railEndY-railStartY, railEndX-railStartX)
 			normal := angle - math.Pi/2
