@@ -50,9 +50,11 @@ fi
 
 cd ..
 
-# Update go.mod to use local SDL2
+# Download Go dependencies and populate go.sum
 echo ""
 echo "📝 Setting up Go environment..."
+echo "Downloading Go dependencies..."
+go mod download
 
 # Create a build script
 cat > build.sh << 'BUILDSCRIPT'
@@ -60,6 +62,10 @@ cat > build.sh << 'BUILDSCRIPT'
 # Build script for TMNT Pinball with local SDL2
 
 set -e
+
+# Disable pkg-config (we don't need it with direct framework linking)
+export PKG_CONFIG_PATH=""
+export PKG_CONFIG=/usr/bin/true
 
 # Set environment variables for local SDL2
 export CGO_CFLAGS="-F$(pwd)/lib -I$(pwd)/lib/SDL2.framework/Headers"

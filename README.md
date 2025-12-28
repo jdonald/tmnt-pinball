@@ -58,9 +58,11 @@ That's it! The setup script will download SDL2 locally - no global installation 
 
 - Downloads SDL2 framework (v2.28.5) directly from GitHub releases
 - Installs it locally in `lib/` directory (not system-wide)
-- Creates `build.sh` and `run.sh` helper scripts
+- Downloads Go dependencies and populates `go.sum`
+- Disables pkg-config requirement (uses direct framework linking)
+- Creates `build.sh` and `run.sh` helper scripts with proper environment variables
 - No admin privileges required
-- No Homebrew needed
+- No Homebrew or pkg-config needed
 
 ### Manual Build (Advanced)
 
