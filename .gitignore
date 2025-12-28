@@ -30,3 +30,15 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+
+# Built application
+tmnt-pinball
+build.sh
+run.sh
+tmnt-pinball-wrapper.sh
+
+# Local SDL2 libraries
+lib/
+
+# macOS files
+.DS_Store

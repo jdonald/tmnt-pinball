@@ -1,0 +1,21 @@
+# Game Controller DB for SDL2
+# This file contains controller mappings for various game controllers
+# Format: GUID,name,mappings
+
+# Xbox 360 Controller (macOS)
+030000005e0400008e02000000007f00,Xbox 360 Controller,platform:Mac OS X,a:b0,b:b1,x:b2,y:b3,back:b9,start:b8,leftstick:b6,rightstick:b7,leftshoulder:b4,rightshoulder:b5,dpup:b11,dpdown:b12,dpleft:b13,dpright:b14,leftx:a0,lefty:a1,rightx:a2,righty:a3,lefttrigger:a4,righttrigger:a5,
+
+# Xbox One Controller (macOS)
+050000005e040000050b000003090000,Xbox One Controller,platform:Mac OS X,a:b0,b:b1,x:b2,y:b3,back:b9,start:b8,leftstick:b6,rightstick:b7,leftshoulder:b4,rightshoulder:b5,dpup:b11,dpdown:b12,dpleft:b13,dpright:b14,leftx:a0,lefty:a1,rightx:a2,righty:a3,lefttrigger:a4,righttrigger:a5,
+
+# PlayStation 4 Controller (macOS)
+030000004c050000cc09000000006800,PS4 Controller,platform:Mac OS X,a:b1,b:b2,x:b0,y:b3,back:b8,start:b9,leftstick:b10,rightstick:b11,leftshoulder:b4,rightshoulder:b5,dpup:h0.1,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,leftx:a0,lefty:a1,rightx:a2,righty:a5,lefttrigger:a3,righttrigger:a4,
+
+# PlayStation 5 Controller (macOS)
+030000004c050000e60c000000006800,PS5 Controller,platform:Mac OS X,a:b1,b:b2,x:b0,y:b3,back:b8,start:b9,leftstick:b10,rightstick:b11,leftshoulder:b4,rightshoulder:b5,dpup:h0.1,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,leftx:a0,lefty:a1,rightx:a2,righty:a5,lefttrigger:a3,righttrigger:a4,
+
+# Nintendo Switch Pro Controller (macOS)
+030000007e0500000920000000007f00,Switch Pro Controller,platform:Mac OS X,a:b0,b:b1,x:b2,y:b3,back:b8,start:b9,leftstick:b10,rightstick:b11,leftshoulder:b4,rightshoulder:b5,dpup:b12,dpdown:b14,dpleft:b15,dpright:b13,leftx:a0,lefty:a1,rightx:a2,righty:a3,lefttrigger:b6,righttrigger:b7,
+
+# Generic USB Controller
+03000000790000001100000000000000,Generic USB Controller,platform:Mac OS X,a:b1,b:b2,x:b0,y:b3,back:b8,start:b9,leftshoulder:b4,rightshoulder:b5,dpup:h0.1,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,leftx:a0,lefty:a1,rightx:a3,righty:a4,lefttrigger:b6,righttrigger:b7,
